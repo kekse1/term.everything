@@ -1,0 +1,15 @@
+This app (term.everything❗mmulet) is
+copyright 2025 Late for Dinner Studios, LLC
+
+Licensed under the GNU Affero General Public License v3.0
+summary:
+licenses: AGPL-3.0-only
+repository: https://github.com/mmulet/term.everything
+publisher: Late for Dinner Studios, LLC
+email: m@mmulet.com
+
+Third-party Dependencies:
+├─ libchafa
+│  ├─ licenses: LGPL-3.0
+│  ├─ repository: https://github.com/hpjansson/chafa
+│  └─ licenseFile: https://github.com/hpjansson/chafa?tab=LGPL-3.0-1-ov-file

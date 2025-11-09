@@ -5,50 +5,12 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "type": "bun",
-      "internalConsoleOptions": "neverOpen",
+      "name": "Gen protocols",
+      "type": "go",
       "request": "launch",
-      "name": "Debug program",
-      "program": "${workspaceFolder}/src/index.ts",
-      "cwd": "${workspaceFolder}",
-      "stopOnEntry": false,
-      "watchMode": false,
-      "preLaunchTask": "build",
-      "env": {
-        "WAYLAND_DEBUG": "1",
-        "DEV": "1",
-        "WAYLAND_DEBUG_HIDE_SURFACE_AND_BUFFER_MESSAGES": "1",
-        // "KEY_MAP_PATH": "${workspaceFolder}/resources/server-1.xkb",
-      }
-    },
-
-    {
-      "type": "bun",
-      "internalConsoleOptions": "neverOpen",
-      "request": "launch",
-      "name": "Debug File",
-      "program": "${file}",
-      "cwd": "${workspaceFolder}",
-      "stopOnEntry": false,
-      "watchMode": false
-    },
-    {
-      "type": "bun",
-      "internalConsoleOptions": "neverOpen",
-      "request": "launch",
-      "name": "Run File",
-      "program": "${file}",
-      "cwd": "${workspaceFolder}",
-      "noDebug": true,
-      "watchMode": false
-    },
-    {
-      "type": "bun",
-      "internalConsoleOptions": "neverOpen",
-      "request": "attach",
-      "name": "Attach Bun",
-      "url": "ws://localhost:6499/",
-      "stopOnEntry": false
+      "mode": "auto",
+      "program": "${workspaceFolder}/cmd/protocols"
     }
+   
   ]
 }

@@ -8,7 +8,7 @@ tasks:
     cmds:
       - bun install
       # remove the bundled libstdc++ that canvas ships with and use the system one
-      - rm -f ./node_modules/canvas/build/Release/libstdc++.so.6
+      - rm -f ./node_modules/canvas/build/Release/libstdc++.so.6 || true
       - |
         cd scripts
         bun install

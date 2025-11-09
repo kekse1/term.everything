@@ -23,4 +23,5 @@ third_party/chafa_source/build
 debug.log
 
 resources/out/bunterm
-
+wayland/protocols/*.xml.go
+wayland/*.helper.go

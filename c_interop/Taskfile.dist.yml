@@ -26,19 +26,19 @@ tasks:
       - rm -rf {{.ROOT_DIR}}/{{.libinterop_OUT_DIR}}
 
 
-  build-chafa:
-    internal: true
-    silent: true
-    cmds:
-      - |
-        cd {{.ROOT_DIR}}/third_party/chafa_source
-        mkdir -p build
-        cd build
-        ../autogen.sh --prefix={{.ROOT_DIR}}/{{.chafa_OUT_DIR}}
-        make -j$(nproc)
-        make install
-    status:
-      - test -d {{.ROOT_DIR}}/{{.chafa_LIB_DIR}}
+  # build-chafa:
+  #   internal: true
+  #   silent: true
+  #   cmds:
+  #     - |
+  #       cd {{.ROOT_DIR}}/third_party/chafa_source
+  #       mkdir -p build
+  #       cd build
+  #       ../autogen.sh --prefix={{.ROOT_DIR}}/{{.chafa_OUT_DIR}}
+  #       make -j$(nproc)
+  #       make install
+  #   status:
+  #     - test -d {{.ROOT_DIR}}/{{.chafa_LIB_DIR}}
 
   clean-chafa:
     cmds:
@@ -52,8 +52,8 @@ tasks:
 
 
   build-setup:
-    deps:
-      - build-chafa
+    # deps:
+    #   - build-chafa
     internal: true
     silent: true
     cmds:

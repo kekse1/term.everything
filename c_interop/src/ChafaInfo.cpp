@@ -112,9 +112,16 @@ static ChafaSymbolTags get_chafa_symbol_tags(gchar** envp) {
         return CHAFA_SYMBOL_TAG_LATIN;
     } else if (g_strcmp0(symbol_tags_override, "IMPORTED") == 0) {
         return CHAFA_SYMBOL_TAG_IMPORTED;
-    } else if (g_strcmp0(symbol_tags_override, "OCTANT") == 0) {
+
+    } 
+ #ifdef CHAFA_VERSION_1_16
+    else if (g_strcmp0(symbol_tags_override, "OCTANT") == 0) {
+    
         return CHAFA_SYMBOL_TAG_OCTANT;
-    } else if (g_strcmp0(symbol_tags_override, "ALL") == 0) {
+    } 
+#endif
+    
+    else if (g_strcmp0(symbol_tags_override, "ALL") == 0) {
         return CHAFA_SYMBOL_TAG_ALL;
     }
     return default_symbol_tags; // No override

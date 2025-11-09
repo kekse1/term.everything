@@ -3,6 +3,7 @@ import { readdir } from "node:fs/promises";
 import { build_protocol } from "./build_protocol.ts";
 
 const files = await readdir(`${import.meta.dir}/../protocols`);
+files.sort();
 const interfaces = await Promise.all(
   files.map(async (file) => {
     return build_protocol(file);
