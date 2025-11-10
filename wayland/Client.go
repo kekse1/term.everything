@@ -11,8 +11,6 @@ import (
 	"github.com/mmulet/term.everything/wayland/protocols"
 )
 
-const WAIT_TIME = time.Millisecond / 2
-
 type Client struct {
 	drawableSurfaces map[protocols.ObjectID[protocols.WlSurface]]bool
 	topLevelSurfaces map[protocols.ObjectID[protocols.XdgToplevel]]bool
@@ -200,7 +198,7 @@ func MakeClient(conn *net.UnixConn) *Client {
 
 		MessageBuffer: make([]byte, 64*1024),
 
-		OutgoingChannel: make(chan protocols.OutgoingEvent, 1024),
+		OutgoingChannel: make(chan protocols.OutgoingEvent, 8192),
 
 		UnclaimedFDs:    make([]protocols.FileDescriptor, 0, 8),
 		Objects:         make(map[protocols.AnyObjectID]any),
@@ -217,8 +215,6 @@ func MakeClient(conn *net.UnixConn) *Client {
 
 func (c *Client) MainLoop() {
 	for {
-		elapsed := time.Since(c.LastGetMessageTime)
-		timeout := time.After(WAIT_TIME - elapsed)
 
 		for {
 			select {
@@ -228,15 +224,17 @@ func (c *Client) MainLoop() {
 					return
 				}
 				// print("Send done\n")
-			case <-timeout:
+			default:
 				goto drained
-				// default:
-				// 	elapsed := time.Since(c.LastGetMessageTime)
-				// 	if elapsed < WAIT_TIME {
-				// 		time.Sleep(WAIT_TIME - elapsed)
-				// 	}
-				// 	c.LastGetMessageTime = time.Now()
+				// case <-timeout:
 				// 	goto drained
+				// 	// default:
+				// 	// 	elapsed := time.Since(c.LastGetMessageTime)
+				// 	// 	if elapsed < WAIT_TIME {
+				// 	// 		time.Sleep(WAIT_TIME - elapsed)
+				// 	// 	}
+				// 	// 	c.LastGetMessageTime = time.Now()
+				// 	// 	goto drained
 			}
 		}
 	drained:

@@ -125,35 +125,25 @@ func (tw *TerminalWindow) OnExit() {
 }
 
 func (tw *TerminalWindow) InputLoop() {
-	read_chan := make(chan []byte, 8192)
-	go func() {
-		buf := make([]byte, 4096)
-		for {
-			n, err := os.Stdin.Read(buf)
-			if err != nil || n == 0 {
-				fmt.Printf("Error reading stdin: %v\n", err)
-				return
-			}
-			// TODO make some sort of pool instead
-			// of allocating new slices every time
-			chunk := make([]byte, n)
-			copy(chunk, buf[:n])
-			read_chan <- chunk
-		}
-	}()
-
+	buf := make([]byte, 4096)
 	for {
-		var chunk []byte
+
+		n, err := os.Stdin.Read(buf)
+
+		if err != nil || n == 0 {
+			fmt.Printf("Error reading stdin: %v\n", err)
+			return
+		}
+		chunk := buf[:n]
 		for {
 			select {
 			case client := <-tw.GetClients:
-				//TODO removing clients
+				//TODO removing client
 				tw.Clients = append(tw.Clients, client)
-			case chunk = <-read_chan:
+			default:
 				goto GotData
 			}
 		}
-
 	GotData:
 
 		// Very literal: TS line -> const codes = convert_keycode_to_xbd_code(chunk);
