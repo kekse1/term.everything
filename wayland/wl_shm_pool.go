@@ -88,21 +88,31 @@ func (p *WlShmPool) WlShmPool_destroy(
 
 func (p *WlShmPool) WlShmPool_resize(
 	s protocols.ClientState,
-	_objectID protocols.ObjectID[protocols.WlShmPool],
+	objectID protocols.ObjectID[protocols.WlShmPool],
 	size int32,
 ) {
 	switch p.MapState {
 	case MapStateDestroyed:
 		return
 	case MapStateMmapped, MapStateDestroyWhenBuffersEmpty:
-		if memap, ok := p.MemMaps[_objectID]; ok {
-			err := memap.Remap(uint64(size))
+		if old, ok := p.MemMaps[objectID]; ok {
+
+			newMap, err := NewMemMapInfo(int(old.FileDescriptor), uint64(size))
 			if err != nil {
-				fmt.Printf("Failed to remap mmap for pool %d: %v\n", _objectID, err)
+				fmt.Printf("Failed to remap mmap for pool %d: %v\n", objectID, err)
 				p.MapState = MapStateDestroyed
 				return
 			}
-			return
+			old.Unmap()
+			p.MemMaps[objectID] = newMap
+
+			// err := memap.Remap(uint64(size))
+			// if err != nil {
+			// 	fmt.Printf("Failed to remap mmap for pool %d: %v\n", _objectID, err)
+			// 	p.MapState = MapStateDestroyed
+			// 	return
+			// }
+			// return
 		}
 		return
 	default:

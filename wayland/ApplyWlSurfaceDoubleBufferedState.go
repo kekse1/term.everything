@@ -209,7 +209,7 @@ func ApplyWlSurfaceDoubleBufferedState(
 		}
 
 		if syncSetByParent {
-			ApplyWlSurfaceDoubleBufferedState(
+			accumulator = ApplyWlSurfaceDoubleBufferedState(
 				s,
 				*childSurfaceObjectID,
 				syncSetByParent,
@@ -245,7 +245,7 @@ func ApplyWlSurfaceDoubleBufferedState(
 			 */
 			continue
 		}
-		ApplyWlSurfaceDoubleBufferedState(
+		accumulator = ApplyWlSurfaceDoubleBufferedState(
 			s,
 			*childSurfaceObjectID,
 			true,

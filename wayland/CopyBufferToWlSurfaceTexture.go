@@ -61,8 +61,8 @@ func CopyBufferToWlSurfaceTexture(
 		if role.Data != nil {
 			sub_surface := GetWlSubsurfaceObject(s, *role.Data)
 			if sub_surface != nil {
-				x += sub_surface.Position.X
-				y += sub_surface.Position.Y
+				x = sub_surface.Position.X
+				y = sub_surface.Position.Y
 			}
 			/**
 			 * @TODO should this be relative to the parent?
@@ -148,7 +148,7 @@ func CopyBufferToWlSurfaceTexture(
 
 	src := memMap.Bytes
 	if offset < 0 || offset+total > len(src) {
-		// fmt.Println("Pool memory bounds error during copy; can't commit")
+		fmt.Println("Pool memory bounds error during copy; can't commit")
 		return
 
 	}

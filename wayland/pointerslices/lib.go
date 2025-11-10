@@ -38,6 +38,8 @@ func Index[T comparable](slice []*T, item T) int {
 	return -1
 }
 
+// Compares for value equality, not pointer equality
+// But will return the index of nil if item is nil and there is a nil in the slice
 func IndexOfItemOrNil[T comparable](slice []*T, item *T) int {
 	for i, s := range slice {
 		if s == nil && item == nil {

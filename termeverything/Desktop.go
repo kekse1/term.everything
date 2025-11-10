@@ -174,7 +174,12 @@ func (cd *Desktop) DrawClients(clients []*wayland.Client) {
 	}
 
 	sort.Slice(sorted, func(i, j int) bool {
-		return sorted[i].Surface.Position.Z < sorted[j].Surface.Position.Z
+		zi := sorted[i].Surface.Position.Z
+		zj := sorted[j].Surface.Position.Z
+		if zi == zj {
+			return sorted[i].SurfaceID < sorted[j].SurfaceID
+		}
+		return zi < zj
 	})
 
 	cd.Clear()

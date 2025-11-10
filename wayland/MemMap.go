@@ -37,31 +37,8 @@ func NewMemMapInfo(fd int, size uint64) (MemMapInfo, error) {
 		FileDescriptor: fdNum,
 		UnMapped:       false,
 	}
-	info.UpdateBytes()
+	info.Bytes = unsafe.Slice((*byte)(info.Addr), info.Size)
 	return info, nil
-}
-
-// This happens automatically on creation and remap
-func (m *MemMapInfo) UpdateBytes() {
-	m.Bytes = unsafe.Slice((*byte)(m.Addr), m.Size)
-}
-
-func (m *MemMapInfo) Remap(newSize uint64) error {
-	if m.UnMapped {
-		return fmt.Errorf("cannot remap unmapped memory")
-	}
-	c_newSize := C.size_t(newSize)
-
-	newAddr := C.remap(m.FileDescriptor, m.Addr, m.Size, c_newSize)
-	if newAddr == C.map_failed() {
-		m.UnMapped = true
-		return fmt.Errorf("failed to remap memory")
-	}
-
-	m.Addr = newAddr
-	m.Size = c_newSize
-	m.UpdateBytes()
-	return nil
 }
 
 func (m *MemMapInfo) Unmap() {
