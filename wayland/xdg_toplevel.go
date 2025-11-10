@@ -4,6 +4,11 @@ import (
 	"github.com/mmulet/term.everything/wayland/protocols"
 )
 
+type PendingToplevelState struct {
+	MaxSize *Size
+	MinSize *Size
+}
+
 type XdgToplevel struct {
 	Parent *protocols.ObjectID[protocols.XdgToplevel]
 
@@ -16,12 +21,7 @@ type XdgToplevel struct {
 	MinSize *Size
 	MaxSize *Size
 
-	pendingMinSize *Size
-	pendingMaxSize *Size
-}
-
-func (t *XdgToplevel) HasPendingState() bool {
-	return t.pendingMinSize != nil || t.pendingMaxSize != nil
+	PendingState *PendingToplevelState
 }
 
 func (t *XdgToplevel) XdgToplevel_destroy(
@@ -99,11 +99,16 @@ func (t *XdgToplevel) XdgToplevel_set_max_size(
 	width int32,
 	height int32,
 ) {
+
+	if t.PendingState == nil {
+		t.PendingState = &PendingToplevelState{}
+	}
+
 	if width <= 0 || height <= 0 {
-		t.pendingMaxSize = nil
+		t.PendingState.MaxSize = nil
 		return
 	}
-	t.pendingMaxSize = &Size{
+	t.PendingState.MaxSize = &Size{
 		Width:  uint32(width),
 		Height: uint32(height),
 	}
@@ -115,11 +120,15 @@ func (t *XdgToplevel) XdgToplevel_set_min_size(
 	width int32,
 	height int32,
 ) {
+	if t.PendingState == nil {
+		t.PendingState = &PendingToplevelState{}
+	}
+
 	if width <= 0 || height <= 0 {
-		t.pendingMinSize = nil
+		t.PendingState.MinSize = nil
 		return
 	}
-	t.pendingMinSize = &Size{
+	t.PendingState.MinSize = &Size{
 		Width:  uint32(width),
 		Height: uint32(height),
 	}

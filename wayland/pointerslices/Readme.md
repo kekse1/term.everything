@@ -1,0 +1,1 @@
+This implements parts of the slices package of the stdlib but for slices that contain pointers, less bugs.

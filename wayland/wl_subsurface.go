@@ -1,8 +1,7 @@
 package wayland
 
 import (
-	"slices"
-
+	"github.com/mmulet/term.everything/wayland/pointerslices"
 	"github.com/mmulet/term.everything/wayland/protocols"
 )
 
@@ -47,8 +46,8 @@ func (ss *WlSubsurface) WlSubsurface_destroy(
 
 	parent_surface := GetWlSurfaceObject(s, ss.Parent)
 	if parent_surface != nil {
-		parent_surface.ChildrenInDrawOrder = slices.DeleteFunc(parent_surface.ChildrenInDrawOrder, func(id *protocols.ObjectID[protocols.WlSurface]) bool {
-			return id == surfaceID
+		parent_surface.ChildrenInDrawOrder = pointerslices.DeleteFunc(parent_surface.ChildrenInDrawOrder, func(id protocols.ObjectID[protocols.WlSurface]) bool {
+			return id == *surfaceID
 		})
 	}
 	surface.ClearRoleData()
@@ -91,10 +90,10 @@ func (ss *WlSubsurface) WlSubsurface_place_above(
 	object_id protocols.ObjectID[protocols.WlSubsurface],
 	sibling_or_parent_id protocols.ObjectID[protocols.WlSurface],
 ) {
-	ss.placeSubsurface(s, object_id, sibling_or_parent_id, ZOrderTypeAbove)
+	ss.PlaceSubsurface(s, object_id, sibling_or_parent_id, ZOrderTypeAbove)
 }
 
-func (ss *WlSubsurface) placeSubsurface(
+func (ss *WlSubsurface) PlaceSubsurface(
 	s protocols.ClientState,
 	object_id protocols.ObjectID[protocols.WlSubsurface],
 	sibling_or_parent_id protocols.ObjectID[protocols.WlSurface],
@@ -123,7 +122,6 @@ func (ss *WlSubsurface) placeSubsurface(
 	if (*parent).PendingUpdate.ZOrderSubsurfaces == nil {
 		(*parent).PendingUpdate.ZOrderSubsurfaces = []ZOrderSubsurface{}
 	}
-
 	(*parent).PendingUpdate.ZOrderSubsurfaces = append(
 		(*parent).PendingUpdate.ZOrderSubsurfaces,
 		ZOrderSubsurface{
@@ -138,7 +136,7 @@ func (ss *WlSubsurface) WlSubsurface_place_below(
 	object_id protocols.ObjectID[protocols.WlSubsurface],
 	sibling_or_parent_id protocols.ObjectID[protocols.WlSurface],
 ) {
-	ss.placeSubsurface(s, object_id, sibling_or_parent_id, ZOrderTypeBelow)
+	ss.PlaceSubsurface(s, object_id, sibling_or_parent_id, ZOrderTypeBelow)
 }
 
 func (ss *WlSubsurface) WlSubsurface_set_sync(

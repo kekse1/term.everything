@@ -1,8 +1,7 @@
 package wayland
 
 import (
-	"slices"
-
+	"github.com/mmulet/term.everything/wayland/pointerslices"
 	"github.com/mmulet/term.everything/wayland/protocols"
 )
 
@@ -103,7 +102,7 @@ func ApplyWlSurfaceDoubleBufferedState(
 
 	if update.SetChildPosition != nil {
 		for _, childPosition := range update.SetChildPosition {
-			if !slices.Contains(surface.ChildrenInDrawOrder, &childPosition.Child) {
+			if !pointerslices.Contains(surface.ChildrenInDrawOrder, childPosition.Child) {
 				continue
 			}
 			childSurface := GetWlSurfaceObject(s, childPosition.Child)
@@ -127,11 +126,11 @@ func ApplyWlSurfaceDoubleBufferedState(
 
 	if update.ZOrderSubsurfaces != nil {
 		for _, zUpdate := range update.ZOrderSubsurfaces {
-			index_of_child := slices.Index(surface.ChildrenInDrawOrder, &zUpdate.ChildToMove)
+			index_of_child := pointerslices.Index(surface.ChildrenInDrawOrder, zUpdate.ChildToMove)
 			if index_of_child == -1 {
 				continue
 			}
-			index_of_relative_to := slices.Index(surface.ChildrenInDrawOrder, zUpdate.RelativeTo)
+			index_of_relative_to := pointerslices.IndexOfItemOrNil(surface.ChildrenInDrawOrder, zUpdate.RelativeTo)
 			if index_of_relative_to == -1 {
 				continue
 			}
@@ -144,7 +143,7 @@ func ApplyWlSurfaceDoubleBufferedState(
 			* be added to the array after the relative_to child
 			* and below means it will be added before the relative_to child
 			 */
-			surface.ChildrenInDrawOrder = slices.Delete(surface.ChildrenInDrawOrder, index_of_child, index_of_child+1)
+			surface.ChildrenInDrawOrder = pointerslices.Delete(surface.ChildrenInDrawOrder, index_of_child, index_of_child+1)
 
 			var offset int
 			if zUpdate.Type == ZOrderTypeAbove {
@@ -152,7 +151,7 @@ func ApplyWlSurfaceDoubleBufferedState(
 			} else {
 				offset = 0
 			}
-			surface.ChildrenInDrawOrder = slices.Insert(surface.ChildrenInDrawOrder, index_of_relative_to+offset, &zUpdate.ChildToMove)
+			surface.ChildrenInDrawOrder = pointerslices.Insert(surface.ChildrenInDrawOrder, index_of_relative_to+offset, &zUpdate.ChildToMove)
 		}
 	}
 
@@ -166,17 +165,16 @@ func ApplyWlSurfaceDoubleBufferedState(
 
 	if role, ok := surface.Role.(*SurfaceRoleXdgToplevel); ok && role.Data != nil {
 		top := GetXdgToplevelObject(s, *role.Data)
-		if top != nil && top.HasPendingState() {
+		if top != nil && top.PendingState != nil {
 
-			if top.pendingMaxSize != nil {
-				top.MaxSize = top.pendingMaxSize
+			if top.PendingState.MaxSize != nil {
+				top.MaxSize = top.PendingState.MaxSize
 			}
 
-			if top.pendingMinSize != nil {
-				top.MinSize = top.pendingMinSize
+			if top.PendingState.MinSize != nil {
+				top.MinSize = top.PendingState.MinSize
 			}
-			top.pendingMaxSize = nil
-			top.pendingMinSize = nil
+			top.PendingState = nil
 		}
 	}
 
