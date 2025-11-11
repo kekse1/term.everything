@@ -2,7 +2,6 @@
 
 .DELETE_ON_ERROR:
 
-
 bin_name :=  dist/$(if $(PLATFORM),$(PLATFORM)/,)$(if $(STATIC_BUILD),static,)/term.everything❗mmulet.com-dont_forget_to_chmod_+x_this_file
 
 protocols_files := $(shell find ./wayland/generate)
@@ -20,9 +19,7 @@ build: $(generated_protocols) $(generated_helpers) $(bin_name)
 $(generated_protocols) $(generated_helpers)&: $(protocols_files) ./wayland/generate.go
 	go generate ./wayland
 
-
 STATIC_FLAGS := $(if $(STATIC_BUILD),-ldflags '-extldflags "-static"',)
-
 
 $(bin_name): go.mod main.go $(shell find ./wayland) $(shell find ./termeverything) Makefile $(shell find ./framebuffertoansi) $(shell find ./escapecodes) $(generated_protocols) $(generated_helpers)
 	go build $(STATIC_FLAGS) -o $(bin_name) .
@@ -30,6 +27,6 @@ $(bin_name): go.mod main.go $(shell find ./wayland) $(shell find ./termeverythin
 clean:
 	@echo cleaning
 	rm __debug_bin* 2>/dev/null || true
-	rm -rf ./dist 2>/dev/null || true
+	if [ -z "$$ALL_PLATFORMS" ]; then rm -rf ./dist 2>/dev/null || true; fi
 	rm ./wayland/protocols/*.xml.go 2>/dev/null || true
 	rm ./wayland/*.helper.go 2>/dev/null || true

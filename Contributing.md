@@ -16,44 +16,49 @@ in `./dist`.
 
 # Development
 
-Below are all the dependencies this app needs. but
-you can also look at `./resources/Containerfile` to see how to install all
-the dependencies
+Below are all the dependencies this app needs.
 
 ## Deps:
 
-- Download the following dependecies from your system's package manager. On ubuntu use: `sudo apt install pkg-config libchafa-dev`
+- Download the following dependecies from your system's package manager. On ubuntu use: `sudo apt install pkg-config libchafa-dev build-essential`
 - Optional: [vscode](https://code.visualstudio.com/) with these recommended extensions:
-    - "mesonbuild.mesonbuild",
     - "ms-vscode.cpptools-extension-pack",
     - "golang.go",
+    - "ms-vscode.makefile-tools"
 
 ### Version map
 These are the versions of the tools used to build and run the project:
-- chafa 1.18.0
-
-
+- chafa 1.16.0
 
 # Running and building
 
 
-### Most useful tasks
-
 ## run
+
+You can just run make
+```sh
+make
+```
+This will build the app.
+
+Or
+Generate the needed code with
+```sh
+go generate
+```
+
+and run with go run.
 
 ```sh
 go run . firefox
 ```
-
-
+e, good for local testing or sending to friends
 ## clean-all
 Remove all build artifacts.
 ```sh
 make clean
 ```
-e, good for local testing or sending to friends
+
 
 ## distribute
-Creates an AppImage in a Ubuntu 22.04 podman container. AppImages mostly 
-forward-compatible, but are not back-wards compatible, so make them in this
-container for compatibility.
+Creates an statically linked binary in a alpine linux podman container.
