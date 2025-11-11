@@ -24,7 +24,7 @@ type MessageDecoder struct {
 	state protocols.DecodeState
 }
 
-func NewMessageDecoder() *MessageDecoder {
+func MakeMessageDecoder() *MessageDecoder {
 	return &MessageDecoder{
 		state: initialDecodeState(),
 	}

@@ -20,8 +20,9 @@
       "console": "integratedTerminal",
       "args": [
         // "alacritty"
+        "firefox"
       ],
-      "buildFlags": ["-tags=debug"],
+      // "buildFlags": ["-tags=debug"],
     }
    
   ]

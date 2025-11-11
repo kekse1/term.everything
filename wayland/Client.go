@@ -12,7 +12,16 @@ import (
 	"github.com/mmulet/term.everything/wayland/protocols"
 )
 
+type ClientStatus int
+
+const (
+	ClientStatus_Connected    ClientStatus = 0
+	ClientStatus_Disconnected ClientStatus = 2
+)
+
 type Client struct {
+	Status ClientStatus
+
 	drawableSurfaces map[protocols.ObjectID[protocols.WlSurface]]bool
 	topLevelSurfaces map[protocols.ObjectID[protocols.XdgToplevel]]bool
 
@@ -26,7 +35,7 @@ type Client struct {
 
 	OutgoingChannel chan protocols.OutgoingEvent
 
-	Decoder MessageDecoder
+	Decoder *MessageDecoder
 
 	UnclaimedFDs []protocols.FileDescriptor
 
@@ -195,8 +204,10 @@ func (c *Client) GetGlobalObjectByID(globalID uint32) any {
 
 func MakeClient(conn *net.UnixConn) *Client {
 	return &Client{
+		Status:            ClientStatus_Connected,
 		UnixConnection:    conn,
 		CompositorVersion: 1,
+		Decoder:           MakeMessageDecoder(),
 		DisplayID:         protocols.ObjectID[protocols.WlDisplay](1),
 
 		messageBuffer: make([]byte, 64*1024),
@@ -215,7 +226,14 @@ func MakeClient(conn *net.UnixConn) *Client {
 	}
 }
 
-func (c *Client) MainLoop() {
+func (c *Client) MainLoop() error {
+	defer func() {
+		c.Status = ClientStatus_Disconnected
+		if c.UnixConnection != nil {
+			if err := c.UnixConnection.Close(); err != nil {
+			}
+		}
+	}()
 	for {
 
 		for {
@@ -223,8 +241,7 @@ func (c *Client) MainLoop() {
 			case ev := <-c.OutgoingChannel:
 
 				if err := c.SendPendingMessage(ev); err != nil {
-					log.Printf("Send error: %v", err)
-					return
+					return err
 				}
 			default:
 				goto drained
@@ -236,12 +253,10 @@ func (c *Client) MainLoop() {
 		n, fds, err := GetMessageAndFileDescriptors(c.UnixConnection, c.messageBuffer)
 		if err != nil {
 			// treat unexpected read errors as fatal
-			log.Printf("Recv error: %v", err)
-			return
+			return err
 		}
 		if err := c.ParseMessages(n, fds); err != nil {
-			log.Printf("Parse error: %v", err)
-			return
+			return err
 		}
 	}
 }

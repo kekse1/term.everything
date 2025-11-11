@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
+	"slices"
 	"syscall"
 	"time"
 
@@ -151,9 +152,20 @@ func (tw *TerminalWindow) InputLoop() {
 }
 
 func (tw *TerminalWindow) ProcessCodes(codes []XkbdCode) {
-	for _, s := range tw.Clients {
+	clients_to_delete := make([]int, 0)
+	for i, s := range tw.Clients {
 		s.Access.Lock()
-		defer s.Access.Unlock()
+		if s.Status != wayland.ClientStatus_Connected {
+			s.Access.Unlock()
+			clients_to_delete = append(clients_to_delete, i)
+			continue
+		} else {
+			defer s.Access.Unlock()
+		}
+	}
+	for i := len(clients_to_delete) - 1; i >= 0; i-- {
+		index := clients_to_delete[i]
+		tw.Clients = slices.Delete(tw.Clients, index, index+1)
 	}
 	now := uint32(time.Now().UnixMilli())
 
